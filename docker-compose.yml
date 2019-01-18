@@ -1,14 +1,32 @@
 version: "3"
 services:
-  db:
-    image: postgresql
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: appuser
-      POSTGRES_DB: myappdb
-  ruby:
-    working_dir: /
-    depends_on:
-      - db
-    
+
+ db:
+   image: postgres
+   restart: always
+   environment:
+     POSTGRES_DB: project
+     POSTGRES_USER: root
+     POSTGRES_PASSWORD: root
+   ports:
+     - "5432:5432"
+
+ ruby:
+   build: ./
+   command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+   volumes:
+     - ./ruby:/app
+   ports:
+     - "3000:3000"
+   depends_on:
+     - db
+
+ mailer:
+   image: tophfr/mailcatcher
+   ports:
+     - "1080:80"
+   links:
+     - ruby
+
+volumes:
+ db_data: {}

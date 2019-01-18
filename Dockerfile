@@ -1,15 +1,15 @@
 FROM ruby:2.5
-
-RUN bundle config --global frozen 1
-
-WORKDIR /usr/src/app
-
-COPY Gemfile Gemfile.lock ./
+RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
+RUN mkdir /ruby
+WORKDIR /ruby
+COPY Gemfile /ruby/Gemfile
+COPY Gemfile.lock /ruby/Gemfile.lock
 RUN bundle install
+COPY . /ruby
 
-COPY . .
-RUN chmod +x entrypoint.sh
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 EXPOSE 3000
 
-CMD ["./config/boot.rb"]
+CMD ["rails", "server", "-b", "0.0.0.0"]
