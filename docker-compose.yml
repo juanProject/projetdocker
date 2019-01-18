@@ -1,0 +1,14 @@
+version: "3"
+services:
+  db:
+    image: postgresql
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: appuser
+      POSTGRES_DB: myappdb
+  ruby:
+    working_dir: /
+    depends_on:
+      - db
+    
